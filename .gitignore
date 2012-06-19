@@ -1,0 +1,12 @@
+.gitignore*
+.DS_Store
+bin/
+*xcuserdata/
+DerivedData
+dist
+ipch
+JIExplorer.opensdf
+JIExplorer.sdf
+JIExplorer.suo
+JIExplorer.vcxproj.user
+JIExplorer.vcxproj.filters

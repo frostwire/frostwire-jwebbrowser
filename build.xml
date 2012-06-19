@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jwebbrowser" default="jar" basedir=".">
+
+	<target name="jar">
+		<mkdir dir="bin" />
+
+		<!-- build -->
+		<javac destdir="bin" includeantruntime="false">
+			<src path="src/java" />
+			<src path="src/os_stub" />
+		</javac>
+
+		<!-- jar -->
+		<jar jarfile="dist/fw-jwebbrowser.jar">
+			<fileset dir="bin" />
+		</jar>
+		
+		<copy file="JIExplorer.dll" todir="dist/"/>
+		<copy file="libJWebKit.dylib" todir="dist/"/>
+
+	</target>
+
+	<target name="clean">
+
+		<delete dir="bin" />
+
+	</target>
+
+</project>
