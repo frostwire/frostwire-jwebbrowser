@@ -50,7 +50,7 @@ public class WebKitComponent extends CocoaComponent implements WebBrowser {
     private WebBrowserListener listener;
 
     public WebKitComponent() {
-        functions = new HashMap<String, BrowserFunction>();
+        functions = new HashMap<>();
     }
 
     @Override
@@ -60,12 +60,7 @@ public class WebKitComponent extends CocoaComponent implements WebBrowser {
 
     @Override
     public long createNSViewLong() {
-        com.apple.concurrent.Dispatch.getInstance().getBlockingMainQueueExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                nsObject = createNSView1();
-            }
-        });
+        com.apple.concurrent.Dispatch.getInstance().getBlockingMainQueueExecutor().execute(() -> nsObject = createNSView1());
 
         return nsObject;
     }

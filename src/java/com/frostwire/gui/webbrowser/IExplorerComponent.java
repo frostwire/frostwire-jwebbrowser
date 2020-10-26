@@ -24,7 +24,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.KeyboardFocusManager;
-import java.awt.peer.ComponentPeer;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +35,6 @@ import sun.awt.windows.WComponentPeer;
 
 /**
  * @author aldenml
- *
  */
 public class IExplorerComponent extends Canvas implements WebBrowser {
 
@@ -115,7 +114,8 @@ public class IExplorerComponent extends Canvas implements WebBrowser {
      * native screen resource.
      * This method is called internally by the toolkit and should
      * not be called directly by programs.
-     * @see       #removeNotify
+     *
+     * @see #removeNotify
      */
     @Override
     public void addNotify() {
@@ -139,9 +139,10 @@ public class IExplorerComponent extends Canvas implements WebBrowser {
     }
 
     /**
-     * Makes the component visible or invisible.  
-     * @param aFlag  <code>true</code> to make the component visible; 
-     * <code>false</code> to make it invisible
+     * Makes the component visible or invisible.
+     *
+     * @param aFlag <code>true</code> to make the component visible;
+     *              <code>false</code> to make it invisible
      */
     @Override
     public void setVisible(boolean aFlag) {
@@ -152,14 +153,15 @@ public class IExplorerComponent extends Canvas implements WebBrowser {
     }
 
     /**
-     * Sets whether or not this component is enabled. A component that is 
-     * enabled may respond to user input, while a component that is not enabled 
-     * cannot respond to user input. Some components may alter their visual 
-     * representation when they are disabled in order to provide feedback to 
+     * Sets whether or not this component is enabled. A component that is
+     * enabled may respond to user input, while a component that is not enabled
+     * cannot respond to user input. Some components may alter their visual
+     * representation when they are disabled in order to provide feedback to
      * the user that they cannot take input. <br/>
      * Note: Disabling a component does not disable its children.<br/>
-     * @param enabled <code>true</code> if this component should be enabled, 
-     * <code>false</code> otherwise
+     *
+     * @param enabled <code>true</code> if this component should be enabled,
+     *                <code>false</code> otherwise
      */
     @Override
     public void setEnabled(boolean enabled) {
@@ -278,11 +280,18 @@ public class IExplorerComponent extends Canvas implements WebBrowser {
             initIDs();
 
             for (Container c = getParent(); null != c; c = c.getParent()) {
-                @SuppressWarnings("deprecation")
-                ComponentPeer cp = getPeer();
-                if ((cp instanceof WComponentPeer)) {
-                    data = create(((WComponentPeer) cp).getHWnd());
-                    break;
+                try {
+                    Field peerField = c.getClass().getDeclaredField("peer");
+                    peerField.setAccessible(true);
+                    Object possibleComponentPeer = peerField.get(this);
+                    //ComponentPeer cp = getPeer();
+                    if ((possibleComponentPeer instanceof WComponentPeer)) {
+                        data = create(((WComponentPeer) possibleComponentPeer).getHWnd());
+                        System.out.println("IExplorerComponent.onAddNotify() - got data=" + data);
+                        break;
+                    }
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -291,38 +300,39 @@ public class IExplorerComponent extends Canvas implements WebBrowser {
 
     /**
      * Synchronous callback for notifications from native code.
-     * @param iId the event identifier - <code>BrComponentEvent.DISPID_XXXX</code> const
-     * @param stName the event name of (optional)
+     *
+     * @param iId     the event identifier - <code>BrComponentEvent.DISPID_XXXX</code> const
+     * @param stName  the event name of (optional)
      * @param stValue the event paramenter(s) (optional)
      * @return the application respont
      */
     private String postEvent(int iId, String stName, String stValue) {
         switch (iId) {
-        case DISPID_REFRESH:
-            break;
-        case DISPID_DOCUMENTCOMPLETE:
-            //            if(isEditable()!=editable){
-            //                //System.out.println("setEditable(" + editable + ");");
-            //                enableEditing(editable);
-            //            } else if(editable) {
-            //                //System.out.println("refreshHard");
-            //                refreshHard();
-            //            }
-            //            documentReady = true;
-            if (listener != null) {
-                listener.onComplete(this, url);
-            }
-            break;
-        case DISPID_NAVIGATECOMPLETE2:
-            break;
-        case DISPID_ONFOCUCHANGE:
-            isFocusOwner = Boolean.parseBoolean(stValue);
-            break;
-        case DISPID_ONFOCUSMOVE:
-            focusMove(Boolean.parseBoolean(stValue));
-            break;
-        case DISPID_PROGRESSCHANGE:
-            break;
+            case DISPID_REFRESH:
+                break;
+            case DISPID_DOCUMENTCOMPLETE:
+                //            if(isEditable()!=editable){
+                //                //System.out.println("setEditable(" + editable + ");");
+                //                enableEditing(editable);
+                //            } else if(editable) {
+                //                //System.out.println("refreshHard");
+                //                refreshHard();
+                //            }
+                //            documentReady = true;
+                if (listener != null) {
+                    listener.onComplete(this, url);
+                }
+                break;
+            case DISPID_NAVIGATECOMPLETE2:
+                break;
+            case DISPID_ONFOCUCHANGE:
+                isFocusOwner = Boolean.parseBoolean(stValue);
+                break;
+            case DISPID_ONFOCUSMOVE:
+                focusMove(Boolean.parseBoolean(stValue));
+                break;
+            case DISPID_PROGRESSCHANGE:
+                break;
         }
         //return processBrComponentEvent(new BrComponentEvent(this, iId, stName, stValue));
 
