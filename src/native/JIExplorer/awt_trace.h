@@ -214,8 +214,10 @@ namespace ZZ{
       return  bContinue?EXCEPTION_CONTINUE_EXECUTION:EXCEPTION_EXECUTE_HANDLER;
     }
     inline void snAssertEx(BOOL bCheck) { 
-      if(!bCheck) 
-        _asm int 3; 
+        //if(!bCheck) 
+        // _asm not supported on x64. Oct 16, 2020 -gubatron
+        //_asm int 3;
+        if (!bCheck) DebugBreak();
     }  
   #endif//_MDEBUG
   #define snAssert(exp) ZZ::snAssertEx((BOOL)(exp))

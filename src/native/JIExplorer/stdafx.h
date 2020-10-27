@@ -68,6 +68,11 @@ extern RECT g_emptyRect;
 #if defined(_WIN64)
     #define ptoa i64toa
     #define atop atoi64
+    #define GWLP_WNDPROC        (-4)
+    #define GWLP_HINSTANCE      (-6)
+    #define GWLP_HWNDPARENT     (-8)
+    #define GWLP_USERDATA       (-21)
+    #define GWLP_ID             (-12)
 #else
     #define ptoa ltoa
     #define atop atol

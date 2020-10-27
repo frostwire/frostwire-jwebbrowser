@@ -182,8 +182,16 @@ LRESULT BrowserThread::StaffWnd(
     WPARAM wParam, 
     LPARAM lParam)
 {
-    if(WM_CREATE==uMsg){
+    if(WM_CREATE==uMsg) {
+#ifdef _WIN32
+    #ifndef GWL_USERDATA
+      #define GWL_USERDATA (-21)
+    #endif
         ::SetWindowLong(hWnd, GWL_USERDATA, (LONG)((LPCREATESTRUCT)lParam)->lpCreateParams);
+#endif
+#ifdef _WIN64
+        ::SetWindowLongPtr(hWnd, GWL_USERDATA, (LONG)((LPCREATESTRUCT)lParam)->lpCreateParams);
+#endif
     } else { 
         BrowserThread *pThis = (BrowserThread *)::GetWindowLong(hWnd, GWL_USERDATA);
         if( pThis )

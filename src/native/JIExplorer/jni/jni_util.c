@@ -157,7 +157,7 @@ JNU_ThrowByNameWithLastError(JNIEnv *env, const char *name,
                              const char *defaultDetail)
 {
     char buf[256];
-    int n = JVM_GetLastErrorString(buf, sizeof(buf));
+    int n = 0;// JVM_GetLastErrorString(buf, sizeof(buf));
 
     if (n > 0) {
         jstring s = JNU_NewStringPlatform(env, buf);
