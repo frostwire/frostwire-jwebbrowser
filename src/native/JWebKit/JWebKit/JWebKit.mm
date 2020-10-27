@@ -49,9 +49,9 @@ jint GetJNIEnv(JNIEnv **env, bool *mustDetach);
     jowner = owner;
     html = nil;
     
-    [self setFrameLoadDelegate:self];
-    [self setUIDelegate:self];
-    [self setDownloadDelegate:self];
+    [self setFrameLoadDelegate:nil];
+    [self setUIDelegate:nil];
+    [self setDownloadDelegate:nil];
     //[self setPolicyDelegate:self];
     //[self setResourceLoadDelegate:self];
 	
